@@ -195,19 +195,33 @@
     #feedback.state-wrong   { color: var(--wrong); }
     #feedback.state-timeout { color: var(--timeout); }
 
-    /* ── Check button ───────────────────────────────── */
-    #check-btn {
-      padding: .6rem 2.2rem;
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: 11px;
-      font-size: .95rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity .15s;
+    /* ── Touch keypad ───────────────────────────────── */
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .5rem;
+      width: 100%;
+      max-width: 240px;
     }
-    #check-btn:hover { opacity: .85; }
+    .key {
+      padding: .75rem .5rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      transition: background .1s, transform .08s;
+      text-align: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .key:active { background: #e0e7ff; transform: scale(.93); }
+    .key.key-del { font-size: 1.1rem; color: var(--wrong); border-color: #fecaca; }
+    .key.key-del:active { background: #fef2f2; }
+    .key.key-check { background: var(--primary); color: #fff; border-color: var(--primary); font-size: 1.1rem; }
+    .key.key-check:active { background: #4338ca; }
 
     /* ── Results ────────────────────────────────────── */
     .big-pct { font-size: 4.5rem; font-weight: 900; color: var(--primary); line-height: 1; }
@@ -252,8 +266,8 @@
       <div class="field-label">Time per question</div>
       <div class="pills">
         <span class="pill"     data-g="secs" data-v="3">3 s  (fast)</span>
-        <span class="pill on"  data-g="secs" data-v="5">5 s  (standard)</span>
-        <span class="pill"     data-g="secs" data-v="8">8 s  (relaxed)</span>
+        <span class="pill on"  data-g="secs" data-v="6">6 s  (standard)</span>
+        <span class="pill"     data-g="secs" data-v="10">10 s  (relaxed)</span>
       </div>
     </div>
 
@@ -302,7 +316,20 @@
     </div>
 
     <div id="feedback"></div>
-    <button id="check-btn">Check ↵</button>
+    <div class="keypad" id="keypad">
+      <button class="key" data-k="1">1</button>
+      <button class="key" data-k="2">2</button>
+      <button class="key" data-k="3">3</button>
+      <button class="key" data-k="4">4</button>
+      <button class="key" data-k="5">5</button>
+      <button class="key" data-k="6">6</button>
+      <button class="key" data-k="7">7</button>
+      <button class="key" data-k="8">8</button>
+      <button class="key" data-k="9">9</button>
+      <button class="key key-del" data-k="del">⌫</button>
+      <button class="key" data-k="0">0</button>
+      <button class="key key-check" data-k="check">✓</button>
+    </div>
   </div>
 </div>
 
@@ -336,7 +363,7 @@
 // ══════════════════════════════════════════════════════
 //  Config (mirrors pill selections)
 // ══════════════════════════════════════════════════════
-const cfg = { op: 'both', secs: 5, len: 20 };
+const cfg = { op: 'both', secs: 6, len: 20 };
 
 // ══════════════════════════════════════════════════════
 //  Pill wiring
@@ -578,7 +605,6 @@ function recordAndEvaluate(isCorrect, ms, timedOut = false) {
 //  Input handlers
 // ══════════════════════════════════════════════════════
 answerEl.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
-$('check-btn').addEventListener('click', submit);
 
 // Auto-submit when 2 digits entered (answers max 20 → always ≤ 2 digits)
 answerEl.addEventListener('input', () => {
@@ -588,6 +614,26 @@ answerEl.addEventListener('input', () => {
     const n = parseInt(v, 10);
     if (!isNaN(n) && n >= 0 && n <= 20) submit();
   }
+});
+
+// Touch keypad
+document.getElementById('keypad').addEventListener('click', e => {
+  const key = e.target.closest('.key');
+  if (!key || locked) return;
+  const k = key.dataset.k;
+  if (k === 'check') { submit(); return; }
+  if (k === 'del') {
+    answerEl.value = answerEl.value.slice(0, -1);
+    return;
+  }
+  // digit
+  const cur = answerEl.value;
+  if (cur.length >= 2) return; // max 2 digits
+  const next = cur + k;
+  answerEl.value = next;
+  // trigger auto-submit check
+  const n = parseInt(next, 10);
+  if (next.length >= 2 && !isNaN(n) && n >= 0 && n <= 20) submit();
 });
 
 // ══════════════════════════════════════════════════════
