@@ -468,7 +468,8 @@ function recordAndEvaluate(isCorrect, ms, timedOut = false) {
 
 // Auto-submit based on the correct answer:
 //   answer 0–9  → accept on the very first digit pressed
-//   answer 10–20 → wait for two digits, then submit
+//   answer 10–20, first digit 1 or 2 → wait for second digit
+//   answer 10–20, first digit 0 or 3–9 → submit immediately (wrong)
 
 function typeDigit(d) {
   if (locked) return;
@@ -480,15 +481,19 @@ function typeDigit(d) {
     answerEl.value = d;
     submit();
   } else {
-    // Two-digit answer — collect both digits first
+    // Two-digit answer (10–20)
     if (cur.length === 0) {
-      answerEl.value = d;           // show first digit, wait
-    } else if (cur.length === 1) {
-      const two = cur + d;
-      answerEl.value = two;
-      const n = parseInt(two, 10);
-      if (!isNaN(n) && n >= 0 && n <= 20) submit();
-      // if somehow > 20, ⌫ lets them fix it
+      answerEl.value = d;
+      if (d === '1' || d === '2') {
+        // Could be start of 10–19 or 20 — wait for second digit
+      } else {
+        // 0 or 3–9 can't begin a number in 10–20 — submit wrong immediately
+        submit();
+      }
+    } else {
+      // Second digit — combine and submit
+      answerEl.value = cur + d;
+      submit();
     }
   }
 }
