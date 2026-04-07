@@ -8,166 +8,139 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --primary:  #4f46e5;
-      --correct:  #16a34a;
-      --wrong:    #dc2626;
-      --timeout:  #d97706;
-      --bg:       #f1f5f9;
-      --card:     #ffffff;
-      --text:     #1e1b4b;
-      --muted:    #94a3b8;
+      --primary: #4f46e5;
+      --correct: #16a34a;
+      --wrong:   #dc2626;
+      --timeout: #d97706;
+      --bg:      #f1f5f9;
+      --card:    #ffffff;
+      --text:    #1e1b4b;
+      --muted:   #94a3b8;
     }
 
-    body {
+    html, body {
+      width: 100%;
+      height: 100%;
       font-family: 'Segoe UI', system-ui, sans-serif;
       background: var(--bg);
-      min-height: 100vh;
-      display: flex;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── Setup & Results: centered cards ───────────── */
+    .screen {
+      display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
-      color: var(--text);
+      min-height: 100dvh;
+      padding: 1.5rem;
+      gap: 1rem;
     }
-
-    /* ── Screens ───────────────────────────────────── */
-    .screen { display: none; flex-direction: column; align-items: center; gap: 1rem; width: min(420px, 100%); }
     .screen.active { display: flex; }
 
-    /* ── Cards ─────────────────────────────────────── */
+    /* Override for game — full viewport flex column */
+    #game.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      min-height: 100dvh;
+      padding: 1rem 1.2rem;
+      gap: 0.7rem;
+    }
+
     .card {
       background: var(--card);
       border-radius: 20px;
       box-shadow: 0 2px 16px rgba(79,70,229,.1);
       padding: 1.75rem;
-      width: 100%;
+      width: min(420px, 100%);
     }
 
-    /* ── Typography ─────────────────────────────────── */
-    h1 {
-      font-size: 1.7rem;
-      font-weight: 800;
-      color: var(--primary);
-      text-align: center;
-    }
-    .sub {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.88rem;
-      margin-top: 0.15rem;
-    }
+    h1 { font-size: 1.7rem; font-weight: 800; color: var(--primary); text-align: center; }
+    .sub { text-align: center; color: var(--muted); font-size: .88rem; margin-top: .15rem; }
 
-    /* ── Setup pills ────────────────────────────────── */
     .field { margin-top: 1.1rem; }
-    .field-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      color: var(--muted);
-      margin-bottom: .45rem;
-    }
+    .field-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: .45rem; }
     .pills { display: flex; flex-wrap: wrap; gap: .5rem; }
     .pill {
-      padding: .38rem .95rem;
-      border: 2px solid #e2e8f0;
-      border-radius: 999px;
-      font-size: .86rem;
-      font-weight: 600;
-      color: #64748b;
-      cursor: pointer;
-      background: #fff;
-      transition: all .15s;
-      user-select: none;
+      padding: .38rem .95rem; border: 2px solid #e2e8f0; border-radius: 999px;
+      font-size: .86rem; font-weight: 600; color: #64748b; cursor: pointer;
+      background: #fff; transition: all .15s; user-select: none;
     }
     .pill:hover { border-color: var(--primary); color: var(--primary); }
-    .pill.on    { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .pill.on { background: var(--primary); border-color: var(--primary); color: #fff; }
 
-    /* ── Buttons ────────────────────────────────────── */
-    .btn {
-      padding: .8rem;
-      border: none;
-      border-radius: 13px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity .15s, transform .1s;
-      width: 100%;
-    }
+    .btn { padding: .8rem; border: none; border-radius: 13px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity .15s, transform .1s; width: 100%; }
     .btn:active { transform: scale(.97); }
-    .btn-primary   { background: var(--primary); color: #fff; margin-top: .8rem; }
+    .btn-primary { background: var(--primary); color: #fff; margin-top: .8rem; }
     .btn-primary:hover { opacity: .88; }
     .btn-secondary { background: #fff; color: var(--primary); border: 2px solid var(--primary); }
     .btn-secondary:hover { background: #eef2ff; }
-    .btn-row { display: flex; gap: .7rem; width: 100%; }
+    .btn-row { display: flex; gap: .7rem; width: min(420px, 100%); }
 
     /* ── HUD ────────────────────────────────────────── */
     .hud { display: flex; justify-content: space-between; width: 100%; }
     .hud-stat { text-align: center; }
-    .hud-val { font-size: 1.4rem; font-weight: 800; color: var(--primary); line-height: 1; }
-    .hud-lbl { font-size: .68rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+    .hud-val { font-size: 1.5rem; font-weight: 800; color: var(--primary); line-height: 1; }
+    .hud-lbl { font-size: .7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
 
-    /* mastery progress bar */
-    .prog-wrap { width: 100%; height: 7px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+    .prog-wrap { width: 100%; height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
     .prog-bar  { height: 100%; background: var(--correct); border-radius: 999px; transition: width .4s ease; width: 0%; }
 
-    /* ── Problem ────────────────────────────────────── */
-    #problem {
-      font-size: 3.2rem;
-      font-weight: 900;
-      letter-spacing: -1px;
-      text-align: center;
-      min-height: 3.8rem;
+    /* ── Game main: equation left, keypad right ─────── */
+    .game-main {
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: clamp(1.5rem, 5vw, 4rem);
+      flex-wrap: wrap;
+    }
+
+    .game-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(0.8rem, 2vh, 1.4rem);
+    }
+
+    /* ── Problem — scales with viewport ─────────────── */
+    #problem {
+      font-size: clamp(3.2rem, 9vw, 7rem);
+      font-weight: 900;
+      letter-spacing: -2px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
       gap: .4rem;
     }
     .op-add { color: var(--primary); }
     .op-sub { color: var(--wrong); }
 
-    /* ── Ring + input ───────────────────────────────── */
+    /* ── Ring + input — scales with viewport ─────────── */
     .ring-wrap {
       position: relative;
-      width: 186px;
-      height: 186px;
+      width:  clamp(140px, 22vw, 200px);
+      height: clamp(140px, 22vw, 200px);
     }
-    /* SVG rotated so arc starts at 12 o'clock */
     .ring-svg { position: absolute; top:0; left:0; width:100%; height:100%; transform: rotate(-90deg); }
-
     .ring-track    { fill: none; stroke: #e2e8f0; stroke-width: 9; }
     .ring-progress {
-      fill: none;
-      stroke: var(--primary);
-      stroke-width: 9;
-      stroke-linecap: round;
-      /* r=84 → circumference = 2π×84 ≈ 527.79 */
-      stroke-dasharray: 527.79;
-      stroke-dashoffset: 0;
-      transition: stroke .2s;
+      fill: none; stroke: var(--primary); stroke-width: 9; stroke-linecap: round;
+      stroke-dasharray: 527.79; stroke-dashoffset: 0; transition: stroke .2s;
     }
     .ring-progress.state-correct { stroke: var(--correct); }
     .ring-progress.state-wrong   { stroke: var(--wrong); }
     .ring-progress.state-timeout { stroke: var(--timeout); }
 
-    /* Answer input sits centered inside the ring */
     #answer {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 118px;
-      text-align: center;
-      font-size: 2.6rem;
-      font-weight: 800;
-      border: 3px solid #e2e8f0;
-      border-radius: 14px;
-      padding: .25rem .4rem;
-      outline: none;
-      color: var(--text);
-      background: #f8fafc;
-      transition: border-color .15s, background .15s;
-      /* hide number spinners */
-      -moz-appearance: textfield;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 62%; text-align: center;
+      font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800;
+      border: 3px solid #e2e8f0; border-radius: 14px;
+      padding: .25rem .4rem; outline: none; color: var(--text); background: #f8fafc;
+      transition: border-color .15s, background .15s; -moz-appearance: textfield;
     }
     #answer::-webkit-outer-spin-button,
     #answer::-webkit-inner-spin-button { -webkit-appearance: none; }
@@ -184,70 +157,61 @@
     #answer.pop   { animation: pop   .28s ease; }
     #answer.shake { animation: shake .32s ease; }
 
-    /* ── Feedback ───────────────────────────────────── */
     #feedback {
-      font-size: 1rem;
-      font-weight: 700;
-      min-height: 1.4rem;
-      text-align: center;
+      font-size: clamp(.9rem, 2.5vw, 1.1rem); font-weight: 700;
+      min-height: 1.4rem; text-align: center;
     }
     #feedback.state-correct { color: var(--correct); }
     #feedback.state-wrong   { color: var(--wrong); }
     #feedback.state-timeout { color: var(--timeout); }
 
-    /* ── Touch keypad ───────────────────────────────── */
+    /* ── Touch keypad — scales with viewport ─────────── */
     .keypad {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: .5rem;
-      width: 100%;
-      max-width: 240px;
+      gap: clamp(.4rem, 1.5vw, .75rem);
     }
     .key {
-      padding: .75rem .5rem;
-      font-size: 1.4rem;
+      width:  clamp(64px, 13vw, 110px);
+      height: clamp(64px, 13vw, 110px);
+      font-size: clamp(1.5rem, 4vw, 2.4rem);
       font-weight: 700;
       border: 2px solid #e2e8f0;
-      border-radius: 12px;
+      border-radius: clamp(10px, 2vw, 16px);
       background: #fff;
       color: var(--text);
       cursor: pointer;
       user-select: none;
-      transition: background .1s, transform .08s;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .1s, transform .08s, box-shadow .1s;
+      box-shadow: 0 2px 6px rgba(0,0,0,.07);
       -webkit-tap-highlight-color: transparent;
     }
-    .key:active { background: #e0e7ff; transform: scale(.93); }
-    .key.key-del { font-size: 1.1rem; color: var(--wrong); border-color: #fecaca; }
+    .key:hover   { background: #f0f4ff; border-color: var(--primary); }
+    .key:active  { background: #e0e7ff; transform: scale(.92); box-shadow: none; }
+    .key.key-del { color: var(--wrong); border-color: #fecaca; font-size: clamp(1.1rem, 3vw, 1.7rem); }
     .key.key-del:active { background: #fef2f2; }
-    .key.key-check { background: var(--primary); color: #fff; border-color: var(--primary); font-size: 1.1rem; }
+    .key.key-check { background: var(--primary); color: #fff; border-color: var(--primary); font-size: clamp(1.3rem, 3.5vw, 2rem); box-shadow: 0 3px 10px rgba(79,70,229,.3); }
     .key.key-check:active { background: #4338ca; }
 
     /* ── Results ────────────────────────────────────── */
     .big-pct { font-size: 4.5rem; font-weight: 900; color: var(--primary); line-height: 1; }
-
     .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; width: 100%; margin-top: .25rem; }
-    .stat-box  { background: #f1f5f9; border-radius: 12px; padding: .75rem; text-align: center; }
-    .stat-val  { font-size: 1.55rem; font-weight: 800; color: var(--text); }
-    .stat-lbl  { font-size: .7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
-
+    .stat-box { background: #f1f5f9; border-radius: 12px; padding: .75rem; text-align: center; }
+    .stat-val { font-size: 1.55rem; font-weight: 800; color: var(--text); }
+    .stat-lbl { font-size: .7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
     .section-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: .5rem; }
     .fact-grid { display: flex; flex-wrap: wrap; gap: 4px; }
-    .chip {
-      font-size: .65rem;
-      font-weight: 700;
-      padding: 3px 7px;
-      border-radius: 6px;
-      background: #e2e8f0;
-      color: #64748b;
-    }
-    .chip.mastered { background: #dcfce7; color: #15803d; }
+    .chip { font-size: .65rem; font-weight: 700; padding: 3px 7px; border-radius: 6px; background: #e2e8f0; color: #64748b; }
+    .chip.mastered  { background: #dcfce7; color: #15803d; }
     .chip.practiced { background: #fef9c3; color: #854d0e; }
   </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════ SETUP -->
+<!-- ══ SETUP ════════════════════════════════════════ -->
 <div id="setup" class="screen active">
   <div class="card">
     <h1>Math Facts</h1>
@@ -256,27 +220,27 @@
     <div class="field">
       <div class="field-label">Operation</div>
       <div class="pills">
-        <span class="pill on"  data-g="op"   data-v="both">+ and −</span>
-        <span class="pill"     data-g="op"   data-v="add">Addition</span>
-        <span class="pill"     data-g="op"   data-v="sub">Subtraction</span>
+        <span class="pill on" data-g="op"   data-v="both">+ and −</span>
+        <span class="pill"    data-g="op"   data-v="add">Addition</span>
+        <span class="pill"    data-g="op"   data-v="sub">Subtraction</span>
       </div>
     </div>
 
     <div class="field">
       <div class="field-label">Time per question</div>
       <div class="pills">
-        <span class="pill"     data-g="secs" data-v="3">3 s  (fast)</span>
-        <span class="pill on"  data-g="secs" data-v="6">6 s  (standard)</span>
-        <span class="pill"     data-g="secs" data-v="10">10 s  (relaxed)</span>
+        <span class="pill"    data-g="secs" data-v="3">3 s (fast)</span>
+        <span class="pill on" data-g="secs" data-v="6">6 s (standard)</span>
+        <span class="pill"    data-g="secs" data-v="10">10 s (relaxed)</span>
       </div>
     </div>
 
     <div class="field">
       <div class="field-label">Session length</div>
       <div class="pills">
-        <span class="pill on"  data-g="len"  data-v="20">20 questions</span>
-        <span class="pill"     data-g="len"  data-v="30">30 questions</span>
-        <span class="pill"     data-g="len"  data-v="40">40 questions</span>
+        <span class="pill on" data-g="len"  data-v="20">20 questions</span>
+        <span class="pill"    data-g="len"  data-v="30">30 questions</span>
+        <span class="pill"    data-g="len"  data-v="40">40 questions</span>
       </div>
     </div>
 
@@ -284,38 +248,36 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════ GAME -->
+<!-- ══ GAME ═════════════════════════════════════════ -->
 <div id="game" class="screen">
-  <div class="hud">
-    <div class="hud-stat">
-      <div class="hud-val" id="hud-mastered">0</div>
-      <div class="hud-lbl">Mastered</div>
-    </div>
-    <div class="hud-stat">
-      <div class="hud-val" id="hud-q">1</div>
-      <div class="hud-lbl">Question</div>
-    </div>
-    <div class="hud-stat">
-      <div class="hud-val" id="hud-correct">0</div>
-      <div class="hud-lbl">Correct</div>
-    </div>
-  </div>
 
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hud-stat"><div class="hud-val" id="hud-mastered">0</div><div class="hud-lbl">Mastered</div></div>
+    <div class="hud-stat"><div class="hud-val" id="hud-q">1</div><div class="hud-lbl">Question</div></div>
+    <div class="hud-stat"><div class="hud-val" id="hud-correct">0</div><div class="hud-lbl">Correct</div></div>
+  </div>
   <div class="prog-wrap"><div class="prog-bar" id="prog-bar"></div></div>
 
-  <div class="card" style="display:flex; flex-direction:column; align-items:center; gap:1.1rem;">
-    <div id="problem"></div>
+  <!-- Main area: equation+ring LEFT, keypad RIGHT -->
+  <div class="game-main">
 
-    <div class="ring-wrap">
-      <svg class="ring-svg" viewBox="0 0 186 186">
-        <circle class="ring-track"    cx="93" cy="93" r="84"/>
-        <circle class="ring-progress" cx="93" cy="93" r="84" id="ring"/>
-      </svg>
-      <input id="answer" type="number" inputmode="numeric"
-             min="0" max="20" autocomplete="off" placeholder="?">
+    <div class="game-left">
+      <div id="problem"></div>
+
+      <div class="ring-wrap">
+        <svg class="ring-svg" viewBox="0 0 186 186">
+          <circle class="ring-track"    cx="93" cy="93" r="84"/>
+          <circle class="ring-progress" cx="93" cy="93" r="84" id="ring"/>
+        </svg>
+        <input id="answer" type="number" inputmode="numeric"
+               min="0" max="20" autocomplete="off" placeholder="?">
+      </div>
+
+      <div id="feedback"></div>
     </div>
 
-    <div id="feedback"></div>
+    <!-- Keypad -->
     <div class="keypad" id="keypad">
       <button class="key" data-k="1">1</button>
       <button class="key" data-k="2">2</button>
@@ -330,29 +292,27 @@
       <button class="key" data-k="0">0</button>
       <button class="key key-check" data-k="check">✓</button>
     </div>
+
   </div>
 </div>
 
-<!-- ══════════════════════════════════════ RESULTS -->
+<!-- ══ RESULTS ══════════════════════════════════════ -->
 <div id="results" class="screen">
-  <div class="card" style="display:flex; flex-direction:column; align-items:center; gap:.9rem;">
+  <div class="card" style="display:flex;flex-direction:column;align-items:center;gap:.9rem;">
     <div style="font-size:2.4rem" id="medal">🏅</div>
     <div class="big-pct" id="res-acc">—</div>
-    <div style="color:var(--muted); font-size:.88rem; margin-top:-.4rem;">accuracy</div>
-
+    <div style="color:var(--muted);font-size:.88rem;margin-top:-.4rem;">accuracy</div>
     <div class="stat-grid">
       <div class="stat-box"><div class="stat-val" id="res-correct">0</div><div class="stat-lbl">Correct</div></div>
       <div class="stat-box"><div class="stat-val" id="res-missed">0</div><div class="stat-lbl">Missed / Timeout</div></div>
       <div class="stat-box"><div class="stat-val" id="res-mastered">0</div><div class="stat-lbl">Mastered</div></div>
       <div class="stat-box"><div class="stat-val" id="res-avg">—</div><div class="stat-lbl">Avg. time</div></div>
     </div>
-
     <div style="width:100%">
       <div class="section-title">Fact progress this session</div>
       <div class="fact-grid" id="fact-grid"></div>
     </div>
   </div>
-
   <div class="btn-row">
     <button class="btn btn-secondary" id="settings-btn">Settings</button>
     <button class="btn btn-primary"   id="again-btn" style="margin-top:0;">Again</button>
@@ -360,14 +320,8 @@
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════
-//  Config (mirrors pill selections)
-// ══════════════════════════════════════════════════════
 const cfg = { op: 'both', secs: 6, len: 20 };
 
-// ══════════════════════════════════════════════════════
-//  Pill wiring
-// ══════════════════════════════════════════════════════
 document.querySelectorAll('.pill').forEach(p => {
   p.addEventListener('click', () => {
     document.querySelectorAll(`.pill[data-g="${p.dataset.g}"]`).forEach(x => x.classList.remove('on'));
@@ -377,16 +331,9 @@ document.querySelectorAll('.pill').forEach(p => {
   });
 });
 
-// ══════════════════════════════════════════════════════
-//  Fact model
-// ══════════════════════════════════════════════════════
-// Each fact: { key, a, op, b, ans, attempts[], mastered, inActive }
-// attempts[]: { correct: bool, ms: number }
-
 function buildPool(op) {
   const pool = [];
   const add = (a, o, b, ans) => pool.push({ key:`${a}${o}${b}`, a, op:o, b, ans, attempts:[], mastered:false, inActive:false });
-
   if (op === 'add' || op === 'both') {
     for (let a = 0; a <= 10; a++)
       for (let b = 0; b <= 10; b++)
@@ -397,11 +344,9 @@ function buildPool(op) {
       for (let b = 0; b <= a && b <= 10; b++)
         add(a, '-', b, a - b);
   }
-  // Shuffle so we don't always start with 0+0, 0+1 …
   return pool.sort(() => Math.random() - 0.5);
 }
 
-// Mastery: last 3 all correct, avg response < time limit
 function isMastered(fact) {
   const r = fact.attempts.slice(-3);
   return r.length >= 3
@@ -409,20 +354,8 @@ function isMastered(fact) {
     && r.reduce((s, a) => s + a.ms, 0) / r.length < cfg.secs * 1000;
 }
 
-// ══════════════════════════════════════════════════════
-//  Adaptive active set
-// ══════════════════════════════════════════════════════
-// Research basis:
-//   • Introduce a small set of facts at a time (reduces cognitive load)
-//   • Repeat unmastered / recently failed facts more often (spacing effect)
-//   • Expand the set when most active facts are mastered (progressive difficulty)
-
-const INIT_SIZE = 5;   // facts in the active set at the start
-const MAX_SIZE  = 12;  // cap so we don't spread too thin
-const EXPAND_AT = 1;   // expand when ≤ this many unmastered remain in set
-
-let pool = [];
-let active = [];
+const INIT_SIZE = 5, MAX_SIZE = 12, EXPAND_AT = 1;
+let pool = [], active = [];
 
 function initActive() {
   active = pool.slice(0, Math.min(INIT_SIZE, pool.length));
@@ -430,59 +363,33 @@ function initActive() {
 }
 
 function maybeExpand() {
-  const unmastered = active.filter(f => !f.mastered).length;
-  if (unmastered <= EXPAND_AT && active.length < Math.min(MAX_SIZE, pool.length)) {
-    const candidates = pool.filter(f => !f.inActive);
-    const toAdd = candidates.slice(0, 2);
-    toAdd.forEach(f => { f.inActive = true; active.push(f); });
-  }
+  if (active.filter(f => !f.mastered).length <= EXPAND_AT && active.length < Math.min(MAX_SIZE, pool.length))
+    pool.filter(f => !f.inActive).slice(0, 2).forEach(f => { f.inActive = true; active.push(f); });
 }
 
-// Weight: unmastered & recently failed facts get more practice
 function weight(fact) {
-  if (fact.mastered) return 2;                            // mastered: rare review
-  const recentFails = fact.attempts.slice(-3).filter(a => !a.correct).length;
-  return 8 + recentFails * 5;                            // 8–23 for unmastered
+  if (fact.mastered) return 2;
+  return 8 + fact.attempts.slice(-3).filter(a => !a.correct).length * 5;
 }
 
 function pickFact() {
   maybeExpand();
   const total = active.reduce((s, f) => s + weight(f), 0);
   let r = Math.random() * total;
-  for (const f of active) {
-    r -= weight(f);
-    if (r <= 0) return f;
-  }
+  for (const f of active) { r -= weight(f); if (r <= 0) return f; }
   return active[active.length - 1];
 }
 
-// ══════════════════════════════════════════════════════
-//  Game state
-// ══════════════════════════════════════════════════════
-let currentFact, qNum, correct, total, totalMs, locked;
-let rafId, qStart;
-
-const CIRC = 2 * Math.PI * 84; // ≈527.79 for r=84
-
-// DOM refs
-const $  = id => document.getElementById(id);
-const screens    = { setup: $('setup'), game: $('game'), results: $('results') };
-const problemEl  = $('problem');
-const answerEl   = $('answer');
-const feedbackEl = $('feedback');
-const ringEl     = $('ring');
-const hudM       = $('hud-mastered');
-const hudQ       = $('hud-q');
-const hudC       = $('hud-correct');
-const progBar    = $('prog-bar');
+let currentFact, qNum, correct, total, totalMs, locked, rafId, qStart;
+const CIRC = 2 * Math.PI * 84;
+const $ = id => document.getElementById(id);
+const screens = { setup: $('setup'), game: $('game'), results: $('results') };
+const answerEl = $('answer'), feedbackEl = $('feedback'), ringEl = $('ring');
 
 function show(name) {
-  Object.entries(screens).forEach(([k,el]) => el.classList.toggle('active', k === name));
+  Object.entries(screens).forEach(([k, el]) => el.classList.toggle('active', k === name));
 }
 
-// ══════════════════════════════════════════════════════
-//  Start
-// ══════════════════════════════════════════════════════
 $('start-btn').addEventListener('click', startGame);
 $('again-btn').addEventListener('click', startGame);
 $('settings-btn').addEventListener('click', () => show('setup'));
@@ -496,65 +403,40 @@ function startGame() {
   nextQuestion();
 }
 
-// ══════════════════════════════════════════════════════
-//  Question flow
-// ══════════════════════════════════════════════════════
 function nextQuestion() {
   if (qNum >= cfg.len) { endGame(); return; }
-
   currentFact = pickFact();
   qNum++;
-
-  // Render problem
-  const opHtml = currentFact.op === '+'
-    ? `<span class="op-add">+</span>`
-    : `<span class="op-sub">−</span>`;
-  problemEl.innerHTML = `${currentFact.a} ${opHtml} ${currentFact.b} =`;
-
-  // Reset UI
+  const opHtml = currentFact.op === '+' ? `<span class="op-add">+</span>` : `<span class="op-sub">−</span>`;
+  $('problem').innerHTML = `${currentFact.a} ${opHtml} ${currentFact.b} =`;
   answerEl.value = '';
   answerEl.className = '';
   feedbackEl.textContent = '';
   feedbackEl.className = 'feedback';
   locked = false;
-
-  hudQ.textContent = qNum;
+  $('hud-q').textContent = qNum;
   updateHUD();
   startCountdown();
   answerEl.focus();
 }
 
-// ══════════════════════════════════════════════════════
-//  Countdown (requestAnimationFrame for smooth ring)
-// ══════════════════════════════════════════════════════
 function startCountdown() {
   cancelAnimationFrame(rafId);
   qStart = performance.now();
-  ringEl.classList.remove('state-correct','state-wrong','state-timeout');
+  ringEl.classList.remove('state-correct', 'state-wrong', 'state-timeout');
   ringEl.style.strokeDashoffset = 0;
-
   (function frame(now) {
     const frac = Math.min((now - qStart) / (cfg.secs * 1000), 1);
     ringEl.style.strokeDashoffset = frac * CIRC;
-    if (!locked) {
-      if (frac < 1) rafId = requestAnimationFrame(frame);
-      else handleTimeout();
-    }
+    if (!locked) { if (frac < 1) rafId = requestAnimationFrame(frame); else handleTimeout(); }
   })(performance.now());
 }
 
-// ══════════════════════════════════════════════════════
-//  Submit
-// ══════════════════════════════════════════════════════
 function submit() {
   if (locked || answerEl.value.trim() === '') return;
   locked = true;
   cancelAnimationFrame(rafId);
-
-  const ms  = performance.now() - qStart;
-  const got = parseInt(answerEl.value, 10);
-
-  recordAndEvaluate(got === currentFact.ans, ms);
+  recordAndEvaluate(parseInt(answerEl.value, 10) === currentFact.ans, performance.now() - qStart);
 }
 
 function handleTimeout() {
@@ -566,115 +448,74 @@ function handleTimeout() {
 function recordAndEvaluate(isCorrect, ms, timedOut = false) {
   currentFact.attempts.push({ correct: isCorrect, ms });
   currentFact.mastered = isMastered(currentFact);
-  total++;
-  totalMs += ms;
+  total++; totalMs += ms;
   if (isCorrect) correct++;
 
   let state, msg, delay;
-  if (isCorrect) {
-    state = 'correct';
-    msg   = currentFact.mastered ? '★ Mastered!' : 'Correct!';
-    delay = 600;
-  } else if (timedOut) {
-    state = 'timeout';
-    msg   = `Time's up — answer: <strong>${currentFact.ans}</strong>`;
-    delay = 1400;
-  } else {
-    state = 'wrong';
-    msg   = `Not quite — answer: <strong>${currentFact.ans}</strong>`;
-    delay = 1300;
-  }
+  if (isCorrect)     { state = 'correct'; msg = currentFact.mastered ? '★ Mastered!' : 'Correct!'; delay = 600; }
+  else if (timedOut) { state = 'timeout'; msg = `Time's up — answer: <strong>${currentFact.ans}</strong>`; delay = 1400; }
+  else               { state = 'wrong';   msg = `Not quite — answer: <strong>${currentFact.ans}</strong>`; delay = 1300; }
 
-  // Update ring color
   ringEl.classList.add(`state-${state}`);
-  if (isCorrect) ringEl.style.strokeDashoffset = 0; // fill ring green on correct
-
-  // Update input
+  if (isCorrect) ringEl.style.strokeDashoffset = 0;
   answerEl.classList.add(`state-${state}`);
-  void answerEl.offsetWidth; // force reflow for animation restart
+  void answerEl.offsetWidth;
   answerEl.classList.add(isCorrect ? 'pop' : 'shake');
-
   feedbackEl.innerHTML = msg;
   feedbackEl.className = `feedback state-${state}`;
-
   updateHUD();
-  setTimeout(() => { answerEl.classList.remove('pop','shake'); nextQuestion(); }, delay);
+  setTimeout(() => { answerEl.classList.remove('pop', 'shake'); nextQuestion(); }, delay);
 }
 
-// ══════════════════════════════════════════════════════
-//  Input handlers
-// ══════════════════════════════════════════════════════
 answerEl.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
-
-// Auto-submit when 2 digits entered (answers max 20 → always ≤ 2 digits)
 answerEl.addEventListener('input', () => {
   if (locked) return;
   const v = answerEl.value;
-  if (v.length >= 2) {
-    const n = parseInt(v, 10);
-    if (!isNaN(n) && n >= 0 && n <= 20) submit();
-  }
+  if (v.length >= 2) { const n = parseInt(v, 10); if (!isNaN(n) && n >= 0 && n <= 20) submit(); }
 });
 
-// Touch keypad
-document.getElementById('keypad').addEventListener('click', e => {
+$('keypad').addEventListener('click', e => {
   const key = e.target.closest('.key');
   if (!key || locked) return;
   const k = key.dataset.k;
   if (k === 'check') { submit(); return; }
-  if (k === 'del') {
-    answerEl.value = answerEl.value.slice(0, -1);
-    return;
-  }
-  // digit
+  if (k === 'del') { answerEl.value = answerEl.value.slice(0, -1); return; }
   const cur = answerEl.value;
-  if (cur.length >= 2) return; // max 2 digits
+  if (cur.length >= 2) return;
   const next = cur + k;
   answerEl.value = next;
-  // trigger auto-submit check
   const n = parseInt(next, 10);
   if (next.length >= 2 && !isNaN(n) && n >= 0 && n <= 20) submit();
 });
 
-// ══════════════════════════════════════════════════════
-//  HUD
-// ══════════════════════════════════════════════════════
 function updateHUD() {
-  const masteredN = active.filter(f => f.mastered).length;
-  hudM.textContent = masteredN;
-  hudC.textContent = correct;
-  progBar.style.width = (masteredN / Math.max(active.length, 1) * 100) + '%';
+  const m = active.filter(f => f.mastered).length;
+  $('hud-mastered').textContent = m;
+  $('hud-correct').textContent  = correct;
+  $('prog-bar').style.width = (m / Math.max(active.length, 1) * 100) + '%';
 }
 
-// ══════════════════════════════════════════════════════
-//  End game
-// ══════════════════════════════════════════════════════
 function endGame() {
   cancelAnimationFrame(rafId);
   show('results');
-
   const acc   = total ? Math.round(correct / total * 100) : 0;
   const avgS  = total ? (totalMs / total / 1000).toFixed(1) : '—';
   const mastN = active.filter(f => f.mastered).length;
   const seen  = active.filter(f => f.attempts.length > 0);
-
-  $('medal').textContent =
-    acc === 100 ? '🥇' : acc >= 85 ? '🥈' : acc >= 70 ? '🥉' : '💪';
-  $('res-acc').textContent     = acc + '%';
-  $('res-correct').textContent = correct;
-  $('res-missed').textContent  = total - correct;
-  $('res-mastered').textContent= mastN;
-  $('res-avg').textContent     = avgS + 's';
-
-  // Fact grid: show only facts that were attempted this session
+  $('medal').textContent        = acc === 100 ? '🥇' : acc >= 85 ? '🥈' : acc >= 70 ? '🥉' : '💪';
+  $('res-acc').textContent      = acc + '%';
+  $('res-correct').textContent  = correct;
+  $('res-missed').textContent   = total - correct;
+  $('res-mastered').textContent = mastN;
+  $('res-avg').textContent      = avgS + 's';
   const grid = $('fact-grid');
   grid.innerHTML = '';
-  seen.sort((a,b) => a.key.localeCompare(b.key)).forEach(f => {
-    const chip = document.createElement('span');
-    chip.className = 'chip ' + (f.mastered ? 'mastered' : 'practiced');
-    chip.textContent = `${f.a}${f.op}${f.b}`;
-    chip.title = `${f.attempts.length} attempt(s)`;
-    grid.appendChild(chip);
+  seen.sort((a, b) => a.key.localeCompare(b.key)).forEach(f => {
+    const c = document.createElement('span');
+    c.className = 'chip ' + (f.mastered ? 'mastered' : 'practiced');
+    c.textContent = `${f.a}${f.op}${f.b}`;
+    c.title = `${f.attempts.length} attempt(s)`;
+    grid.appendChild(c);
   });
 }
 </script>
