@@ -193,8 +193,7 @@
     .key:active  { background: #e0e7ff; transform: scale(.92); box-shadow: none; }
     .key.key-del { color: var(--wrong); border-color: #fecaca; font-size: clamp(1.1rem, 3vw, 1.7rem); }
     .key.key-del:active { background: #fef2f2; }
-    .key.key-check { background: var(--primary); color: #fff; border-color: var(--primary); font-size: clamp(1.3rem, 3.5vw, 2rem); box-shadow: 0 3px 10px rgba(79,70,229,.3); }
-    .key.key-check:active { background: #4338ca; }
+    .key-spacer { width: clamp(64px, 13vw, 110px); height: clamp(64px, 13vw, 110px); }
 
     /* ── Results ────────────────────────────────────── */
     .big-pct { font-size: 4.5rem; font-weight: 900; color: var(--primary); line-height: 1; }
@@ -288,9 +287,9 @@
       <button class="key" data-k="7">7</button>
       <button class="key" data-k="8">8</button>
       <button class="key" data-k="9">9</button>
-      <button class="key key-del" data-k="del">⌫</button>
+      <div class="key-spacer"></div>
       <button class="key" data-k="0">0</button>
-      <button class="key key-check" data-k="check">✓</button>
+      <button class="key key-del" data-k="del">⌫</button>
     </div>
 
   </div>
@@ -409,6 +408,7 @@ function nextQuestion() {
   qNum++;
   const opHtml = currentFact.op === '+' ? `<span class="op-add">+</span>` : `<span class="op-sub">−</span>`;
   $('problem').innerHTML = `${currentFact.a} ${opHtml} ${currentFact.b} =`;
+  clearPending();
   answerEl.value = '';
   answerEl.className = '';
   feedbackEl.textContent = '';
@@ -467,25 +467,77 @@ function recordAndEvaluate(isCorrect, ms, timedOut = false) {
   setTimeout(() => { answerEl.classList.remove('pop', 'shake'); nextQuestion(); }, delay);
 }
 
-answerEl.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+// Auto-submit logic:
+//   0, 3–9  → submit immediately (no valid teen starts with these)
+//   1 or 2  → wait 700 ms for a possible second digit (10–19, 20)
+//             if a second digit arrives first, combine and submit
+//   2 digits → submit immediately
+
+let pendingDigit = null;
+let pendingTimer = null;
+
+function clearPending() {
+  clearTimeout(pendingTimer);
+  pendingDigit = null;
+}
+
+function typeDigit(d) {
+  if (locked) return;
+
+  // Second digit arriving while first (1 or 2) is pending
+  if (pendingDigit !== null) {
+    clearPending();
+    const two = pendingDigit + d;
+    const n = parseInt(two, 10);
+    answerEl.value = two;
+    if (!isNaN(n) && n >= 0 && n <= 20) submit();
+    // if > 20 (e.g. "21") just show it; ⌫ will let them fix it
+    return;
+  }
+
+  answerEl.value = d;
+
+  if (d === '0' || parseInt(d) >= 3) {
+    // Can never be the start of a valid 2-digit answer ≤ 20
+    submit();
+  } else {
+    // d is '1' or '2' — might be 1/2 alone, or start of 10–19/20
+    pendingDigit = d;
+    pendingTimer = setTimeout(() => {
+      clearPending();
+      if (!locked) submit();
+    }, 700);
+  }
+}
+
+// Physical keyboard
+answerEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { clearPending(); submit(); }
+  if (e.key === 'Backspace') clearPending();
+});
+// Catch digits typed directly into the input (physical keyboard)
 answerEl.addEventListener('input', () => {
   if (locked) return;
   const v = answerEl.value;
-  if (v.length >= 2) { const n = parseInt(v, 10); if (!isNaN(n) && n >= 0 && n <= 20) submit(); }
+  if (!v) return;
+  // Grab last character typed and run through same logic
+  const last = v[v.length - 1];
+  if (!/\d/.test(last)) { answerEl.value = v.slice(0, -1); return; }
+  answerEl.value = ''; // typeDigit sets it
+  typeDigit(last);
 });
 
+// Touch keypad
 $('keypad').addEventListener('click', e => {
   const key = e.target.closest('.key');
   if (!key || locked) return;
   const k = key.dataset.k;
-  if (k === 'check') { submit(); return; }
-  if (k === 'del') { answerEl.value = answerEl.value.slice(0, -1); return; }
-  const cur = answerEl.value;
-  if (cur.length >= 2) return;
-  const next = cur + k;
-  answerEl.value = next;
-  const n = parseInt(next, 10);
-  if (next.length >= 2 && !isNaN(n) && n >= 0 && n <= 20) submit();
+  if (k === 'del') {
+    clearPending();
+    answerEl.value = answerEl.value.slice(0, -1);
+    return;
+  }
+  typeDigit(k);
 });
 
 function updateHUD() {
