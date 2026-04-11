@@ -165,19 +165,20 @@
     #feedback.state-wrong   { color: var(--wrong); }
     #feedback.state-timeout { color: var(--timeout); }
 
-    /* ── Touch keypad — scales with viewport ─────────── */
+    /* ── Touch keypad — 4 rows × 5 columns, numbers 1–20 ── */
     .keypad {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: clamp(.4rem, 1.5vw, .75rem);
+      grid-template-columns: repeat(5, 1fr);
+      gap: clamp(.3rem, 1vw, .55rem);
+      width: min(460px, 88vw);
     }
     .key {
-      width:  clamp(64px, 13vw, 110px);
-      height: clamp(64px, 13vw, 110px);
-      font-size: clamp(1.5rem, 4vw, 2.4rem);
+      aspect-ratio: 1;
+      width: 100%;
+      font-size: clamp(.85rem, 2.2vw, 1.4rem);
       font-weight: 700;
       border: 2px solid #e2e8f0;
-      border-radius: clamp(10px, 2vw, 16px);
+      border-radius: clamp(8px, 1.5vw, 14px);
       background: #fff;
       color: var(--text);
       cursor: pointer;
@@ -189,11 +190,8 @@
       box-shadow: 0 2px 6px rgba(0,0,0,.07);
       -webkit-tap-highlight-color: transparent;
     }
-    .key:hover   { background: #f0f4ff; border-color: var(--primary); }
-    .key:active  { background: #e0e7ff; transform: scale(.92); box-shadow: none; }
-    .key.key-del { color: var(--wrong); border-color: #fecaca; font-size: clamp(1.1rem, 3vw, 1.7rem); }
-    .key.key-del:active { background: #fef2f2; }
-    .key-spacer { width: clamp(64px, 13vw, 110px); height: clamp(64px, 13vw, 110px); }
+    .key:hover  { background: #f0f4ff; border-color: var(--primary); }
+    .key:active { background: #e0e7ff; transform: scale(.92); box-shadow: none; }
 
     /* ── Results ────────────────────────────────────── */
     .big-pct { font-size: 4.5rem; font-weight: 900; color: var(--primary); line-height: 1; }
@@ -276,7 +274,7 @@
       <div id="feedback"></div>
     </div>
 
-    <!-- Keypad -->
+    <!-- Keypad: 4 rows × 5 cols = answers 1–20 -->
     <div class="keypad" id="keypad">
       <button class="key" data-k="1">1</button>
       <button class="key" data-k="2">2</button>
@@ -287,9 +285,17 @@
       <button class="key" data-k="7">7</button>
       <button class="key" data-k="8">8</button>
       <button class="key" data-k="9">9</button>
-      <div class="key-spacer"></div>
-      <button class="key" data-k="0">0</button>
-      <button class="key key-del" data-k="del">⌫</button>
+      <button class="key" data-k="10">10</button>
+      <button class="key" data-k="11">11</button>
+      <button class="key" data-k="12">12</button>
+      <button class="key" data-k="13">13</button>
+      <button class="key" data-k="14">14</button>
+      <button class="key" data-k="15">15</button>
+      <button class="key" data-k="16">16</button>
+      <button class="key" data-k="17">17</button>
+      <button class="key" data-k="18">18</button>
+      <button class="key" data-k="19">19</button>
+      <button class="key" data-k="20">20</button>
     </div>
 
   </div>
@@ -335,13 +341,17 @@ function buildPool(op) {
   const add = (a, o, b, ans) => pool.push({ key:`${a}${o}${b}`, a, op:o, b, ans, attempts:[], mastered:false, inActive:false });
   if (op === 'add' || op === 'both') {
     for (let a = 0; a <= 10; a++)
-      for (let b = 0; b <= 10; b++)
-        if (a + b <= 20) add(a, '+', b, a + b);
+      for (let b = 0; b <= 10; b++) {
+        const ans = a + b;
+        if (ans >= 1 && ans <= 20) add(a, '+', b, ans);
+      }
   }
   if (op === 'sub' || op === 'both') {
     for (let a = 0; a <= 20; a++)
-      for (let b = 0; b <= a && b <= 10; b++)
-        add(a, '-', b, a - b);
+      for (let b = 0; b <= a && b <= 10; b++) {
+        const ans = a - b;
+        if (ans >= 1) add(a, '-', b, ans);
+      }
   }
   return pool.sort(() => Math.random() - 0.5);
 }
@@ -466,39 +476,7 @@ function recordAndEvaluate(isCorrect, ms, timedOut = false) {
   setTimeout(() => { answerEl.classList.remove('pop', 'shake'); nextQuestion(); }, delay);
 }
 
-// Auto-submit based on the correct answer:
-//   answer 0–9  → accept on the very first digit pressed
-//   answer 10–20, first digit 1 or 2 → wait for second digit
-//   answer 10–20, first digit 0 or 3–9 → submit immediately (wrong)
-
-function typeDigit(d) {
-  if (locked) return;
-  const needsTwo = currentFact.ans >= 10;
-  const cur = answerEl.value;
-
-  if (!needsTwo) {
-    // Single-digit answer — accept immediately
-    answerEl.value = d;
-    submit();
-  } else {
-    // Two-digit answer (10–20)
-    if (cur.length === 0) {
-      answerEl.value = d;
-      if (d === '1' || d === '2') {
-        // Could be start of 10–19 or 20 — wait for second digit
-      } else {
-        // 0 or 3–9 can't begin a number in 10–20 — submit wrong immediately
-        submit();
-      }
-    } else {
-      // Second digit — combine and submit
-      answerEl.value = cur + d;
-      submit();
-    }
-  }
-}
-
-// Physical keyboard
+// Physical keyboard: type the number and press Enter
 answerEl.addEventListener('keydown', e => {
   if (e.key === 'Enter') submit();
 });
@@ -506,22 +484,16 @@ answerEl.addEventListener('input', () => {
   if (locked) return;
   const v = answerEl.value.replace(/\D/g, '').slice(0, 2);
   answerEl.value = v;
-  if (!v) return;
-  const needsTwo = currentFact.ans >= 10;
-  if (!needsTwo && v.length >= 1) submit();
-  else if (needsTwo && v.length >= 2) {
-    const n = parseInt(v, 10);
-    if (!isNaN(n) && n >= 0 && n <= 20) submit();
-  }
 });
 
-// Touch keypad
+// Touch keypad: each button IS the complete answer — submit immediately
 $('keypad').addEventListener('click', e => {
   const key = e.target.closest('.key');
   if (!key || locked) return;
-  const k = key.dataset.k;
-  if (k === 'del') { answerEl.value = answerEl.value.slice(0, -1); return; }
-  typeDigit(k);
+  const n = parseInt(key.dataset.k, 10);
+  if (isNaN(n)) return;
+  answerEl.value = n;
+  submit();
 });
 
 function updateHUD() {
